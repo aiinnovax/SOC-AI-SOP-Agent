@@ -4,6 +4,18 @@ import google.generativeai as genai
 import requests
 import json
 genai.configure(api_key=st.secrets.get("GEMINI_API_KEY"))
+
+def generate_sop(...):
+
+    try:
+        model = genai.GenerativeModel("gemini-1.5-flash")
+
+        response = model.generate_content(system_prompt)
+
+        return response.text
+
+    except Exception as e:
+        return f"ERROR:\n{str(e)}"
 # --- AI ENGINE CONFIGURATION ---
 # Toggle between "GROQ", "GEMINI", or "OPENROUTER" to change the platform brain
 model = genai.GenerativeModel("gemini-1.0-pro")
