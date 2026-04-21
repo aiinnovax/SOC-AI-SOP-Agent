@@ -13,48 +13,100 @@ if "logged_in_email" not in st.session_state:
     st.session_state.logged_in_email = None
 
 if not st.session_state.logged_in_email:
-    # --- LOGIN SCREEN ---
-    st.sidebar.subheader("Terminal Login")
-    login_email = st.sidebar.text_input("Corporate Email")
-    login_password = st.sidebar.text_input("Password", type="password")
+    st.subheader("Terminal Login")
+    login_email = st.text_input("Corporate Email")
+    login_password = st.text_input("Password", type="password")
     
-    if st.sidebar.button("Login", type="primary", use_container_width=True):
-        # Verify credentials against DB
+    if st.button("Login", type="primary"):
         matched_user = next((u for u in db.get("users", []) if u["email"] == login_email and u.get("password") == login_password), None)
         
         if matched_user:
             if matched_user.get("status", "Active") == "Inactive":
-                st.sidebar.error("Account Suspended. Please contact AIInnovax support.")
+                st.error("Account Suspended. Please contact AIInnovax support.")
             else:
-                # Store email in session and reload
                 st.session_state.logged_in_email = matched_user["email"]
                 st.rerun()
         else:
-            st.sidebar.error("Authentication Failed. Invalid email or password.")
-    st.stop() # Stop execution here if not logged in
+            st.error("Authentication Failed. Invalid email or password.")
+    st.stop()
 
 # --- FETCH FRESH USER DATA ---
-# This ensures we always have the latest quota even after a page reload
 current_user = next((u for u in db.get("users", []) if u["email"] == st.session_state.logged_in_email), None)
 
-# Security check in case admin deleted the account while they were logged in
 if not current_user or current_user.get("status", "Active") == "Inactive":
     st.session_state.logged_in_email = None
     st.rerun()
 
-st.sidebar.success(f"Authenticated as {current_user['company']}")
+# --- TOP NAVIGATION (Profile & Logout) ---
+col_spacer, col_profile, col_logout = st.columns([8, 1, 1])
+with col_profile:
+    if st.button("👤 Profile", use_container_width=True):
+        st.session_state.cust_menu = "Profile"
+with col_logout:
+    if st.button("🚪 Logout", use_container_width=True):
+        st.session_state.logged_in_email = None
+        st.rerun()
+st.divider()
 
-# --- LOGOUT BUTTON ---
-if st.sidebar.button("Logout", use_container_width=True):
-    st.session_state.logged_in_email = None
-    st.rerun()
+# --- FORCE PASSWORD RESET (First Time Login) ---
+if current_user.get("force_reset", False):
+    st.title("🔒 Action Required: Reset Password")
+    st.warning("For security purposes, you must change your auto-generated temporary password before accessing the portal.")
+    
+    new_pw = st.text_input("New Password", type="password")
+    confirm_pw = st.text_input("Confirm New Password", type="password")
+    
+    if st.button("Update Security Credentials", type="primary"):
+        if new_pw == confirm_pw and len(new_pw) >= 6:
+            for u in db["users"]:
+                if u["email"] == current_user["email"]:
+                    u["password"] = new_pw
+                    u["force_reset"] = False # Unlock the account
+            save_db(db, sha, f"Customer: {current_user['company']} reset their password.")
+            st.success("Password Updated Successfully! Accessing Portal...")
+            st.rerun()
+        else:
+            st.error("Passwords must match and be at least 6 characters long.")
+    st.stop() # Prevent access to the rest of the portal
 
-st.sidebar.divider()
+st.sidebar.success(f"Connected: {current_user['company']}")
 
 # --- SIDEBAR NAV ---
-menu = st.sidebar.radio("Mission Control", ["SOP Architect", "My Repository", "License & Usage"])
+if "cust_menu" not in st.session_state:
+    st.session_state.cust_menu = "SOP Architect"
 
-if menu == "SOP Architect":
+menu_options = ["SOP Architect", "My Repository", "License & Usage"]
+if st.session_state.cust_menu == "Profile":
+    menu = "Profile"
+    if st.sidebar.button("← Back to Portal"):
+        st.session_state.cust_menu = "SOP Architect"
+        st.rerun()
+else:
+    menu = st.sidebar.radio("Mission Control", menu_options, index=menu_options.index(st.session_state.cust_menu))
+    st.session_state.cust_menu = menu
+
+# --- PAGE ROUTING ---
+if menu == "Profile":
+    st.title("👤 My Profile")
+    st.write(f"**Company:** {current_user['company']}")
+    st.write(f"**Email:** {current_user['email']}")
+    
+    with st.container(border=True):
+        st.subheader("Update Password")
+        update_pw = st.text_input("New Password", type="password", key="upw1")
+        confirm_update = st.text_input("Confirm New Password", type="password", key="upw2")
+        
+        if st.button("Save New Password"):
+            if update_pw == confirm_update and len(update_pw) >= 6:
+                for u in db["users"]:
+                    if u["email"] == current_user["email"]:
+                        u["password"] = update_pw
+                save_db(db, sha, f"Customer: {current_user['company']} manually updated password.")
+                st.success("Password Updated Successfully!")
+            else:
+                st.error("Passwords must match and be at least 6 characters.")
+
+elif menu == "SOP Architect":
     st.title("🔍 SOP-Genie: Architect")
     
     if current_user["used"] >= current_user["limit"]:
@@ -130,7 +182,6 @@ elif menu == "My Repository":
 
 elif menu == "License & Usage":
     st.title("🪪 Subscription Status")
-    
     st.metric("Current Plan", current_user["plan"].split(" (")[0]) 
     
     usage_percent = min(current_user["used"] / current_user["limit"], 1.0)
@@ -139,7 +190,3 @@ elif menu == "License & Usage":
     st.write(f"**Usage:** {current_user['used']} / {current_user['limit']} Monthly SOPs utilized.")
     st.write(f"**Account Status:** {current_user.get('status', 'Active')}")
     st.write(f"**Plan Details:** {current_user['plan']}")
-    
-    st.divider()
-    if "Premium" not in current_user["plan"]:
-        st.info("Need higher limits? Reach out to your AIInnovax representative to upgrade your plan.")
