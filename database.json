@@ -2,11 +2,14 @@
     "customers": [
         {
             "name": "infosys",
-            "siem": "Sentinel",
-            "logs": "Windows Events, Cisco ISE, CrowdStrike, O365, Azure AD",
             "tier": "MSSP Enterprise",
-            "active": true,
-            "updated_at": "2024-05-15"
+            "subscription_start": "2024-01-01",
+            "subscription_end": "2025-01-01",
+            "status": "Active"
         }
-    ]
+    ],
+    "global_stats": {
+        "api_limit_status": "Healthy",
+        "total_sop_count": 1248
+    }
 }
