@@ -1,10 +1,19 @@
-import os
-from litellm import completion
-
-# Swap this single variable to change the entire platform's brain
-ACTIVE_MODEL = "gemini/gemini-1.5-flash"
+import streamlit as st
+import google.generativeai as genai
 
 def generate_sop(siem, logic, client_name, log_sources):
+    # Retrieve API Key from Streamlit Secrets
+    api_key = st.secrets["GEMINI_API_KEY"]
+    
+    if not api_key:
+        return "🚨 **SOP SYNTHESIS ERROR:** GEMINI_API_KEY not found in Streamlit Secrets."
+
+    # Configure the official Google SDK
+    genai.configure(api_key=api_key)
+    
+    # Initialize the model
+    model = genai.GenerativeModel('gemini-1.5-flash')
+
     system_prompt = f"""
     You are SOP-Genie, an expert SOC Operational Procedure Architect.
     Translate the following {siem} detection logic into a structured SOP for {client_name}.
@@ -24,20 +33,14 @@ def generate_sop(siem, logic, client_name, log_sources):
     10. **Visual Decision Tree**: A Mermaid.js flowchart mapping the triage path. Enclose in a ```mermaid block.
     """
 
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": f"Logic to analyze:\n{logic}"}
-    ]
-
     try:
-        response = completion(
-            model=ACTIVE_MODEL, 
-            messages=messages, 
-            temperature=0.1,
-            timeout=45,
-            api_version="v1" # Explicitly tell Google to use the stable v1 API
+        # Generate Content
+        response = model.generate_content(
+            f"{system_prompt}\n\nLogic to analyze:\n{logic}",
+            generation_config=genai.types.GenerationConfig(
+                temperature=0.1
+            )
         )
-        return response.choices[0].message.content
+        return response.text
     except Exception as e:
-        # This will now display the exact error on your screen instead of spinning
-        return f"🚨 **SOP SYNTHESIS ERROR:** API Connection Failed. Please check your GEMINI_API_KEY. \n\n**Technical Details:** {str(e)}"
+        return f"🚨 **SOP SYNTHESIS ERROR:** Connection Failed. \n\n**Technical Details:** {str(e)}"
