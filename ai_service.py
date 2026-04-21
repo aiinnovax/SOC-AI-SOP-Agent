@@ -30,12 +30,12 @@ def generate_sop(siem, logic, client_name, log_sources):
     ]
 
     try:
-        # Added a 45-second timeout so it never hangs forever
         response = completion(
             model=ACTIVE_MODEL, 
             messages=messages, 
             temperature=0.1,
-            timeout=45 
+            timeout=45,
+            api_version="v1" # Explicitly tell Google to use the stable v1 API
         )
         return response.choices[0].message.content
     except Exception as e:
