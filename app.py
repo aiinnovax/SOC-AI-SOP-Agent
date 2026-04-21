@@ -34,28 +34,10 @@ with col_output:
             with st.spinner(f"Analyzing {siem_type} logic for {client_name}..."):
                 sop_result = generate_sop(client_name, siem_type, log_sources, raw_logic)
                 
-                # Extract the Mermaid block using regex
-                mermaid_match = re.search(r'```mermaid\n(.*?)\n```', sop_result, re.DOTALL)
-                
-                if mermaid_match:
-                    mermaid_code = mermaid_match.group(1)
-                    
-                    # Remove the raw mermaid block from the text so it doesn't print as plain text
-                    clean_markdown = re.sub(r'```mermaid\n(.*?)\n```', '', sop_result, flags=re.DOTALL)
-                    
-                    # Display the text SOP
-                    st.markdown(clean_markdown)
-                    
-                    # Render the Mermaid chart via HTML component
-                    st.markdown("### Visual Decision Tree")
-                    mermaid_html = f"""
-                    <div class="mermaid">
-                    {mermaid_code}
-                    </div>
-                    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-                    <script>mermaid.initialize({{startOnLoad:true}});</script>
-                    """
-                    components.html(mermaid_html, height=500, scrolling=True)
-                else:
-                    # If the AI failed to generate the chart, display everything as normal text
-                    st.markdown(sop_result)
+                # Bulletproof regex to catch any variation of the mermaid block
+                mermaid_match = re.search(r'
+http://googleusercontent.com/immersive_entry_chip/0
+http://googleusercontent.com/immersive_entry_chip/1
+4. Click **Build SOP**.
+
+Scroll down on the right side. Do you see the **GREEN** box and the visual chart, or did you get the **RED** box telling us the AI got lazy and skipped the step? Let me know exactly what you see!
