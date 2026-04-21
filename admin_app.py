@@ -5,37 +5,14 @@ from github_db import get_db, save_db
 
 st.set_page_config(page_title="AIInnovax Admin", layout="wide", initial_sidebar_state="expanded")
 
-# --- PROFESSIONAL UI & CSS ---
-st.markdown("""
-    <style>
-    [data-testid='stSidebarNav'] {display: none;}
-    .stApp { background-color: #F8FAFC; }
-    
-    /* Colorful Metrics */
-    div[data-testid="metric-container"] {
-        background-color: #ffffff; border-radius: 12px; padding: 20px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        border-top: 4px solid #3B82F6; /* Bright Blue */
-    }
-    div[data-testid="stMetricValue"] { color: #1E293B; font-weight: 900; font-size: 2rem;}
-    div[data-testid="stMetricLabel"] { color: #64748B; font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;}
-    
-    /* Buttons */
-    .stButton>button { border-radius: 8px; font-weight: bold; transition: all 0.3s; }
-    .stButton>button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
-    
-    /* Headers & Text */
-    h1, h2, h3 { color: #0F172A; font-weight: 800; }
-    </style>
-""", unsafe_allow_html=True)
-
 db, sha = get_db()
 
+# Initialize Admin Credentials if not in DB
 if "admin_settings" not in db:
     db["admin_settings"] = {"email": "admin@aiinnovax.com", "password": "admin"}
     save_db(db, sha, "Initialize admin")
 
-# --- CENTERED LOGIN SCREEN (WITH ENTER KEY) ---
+# --- CENTERED LOGIN SCREEN ---
 if "admin_logged_in" not in st.session_state:
     st.session_state.admin_logged_in = False
 
@@ -43,21 +20,21 @@ if not st.session_state.admin_logged_in:
     col1, col2, col3 = st.columns([1, 1.5, 1])
     with col2:
         st.write("<br><br><br>", unsafe_allow_html=True)
-        with st.form("admin_login_form"):
-            st.markdown("<h2 style='text-align: center; color: #3B82F6;'>🛡️ AIInnovax Admin</h2>", unsafe_allow_html=True)
-            st.markdown("<p style='text-align: center; color: #64748B;'>Vendor Command Center</p>", unsafe_allow_html=True)
-            admin_email = st.text_input("Admin Email")
-            admin_password = st.text_input("Password", type="password")
-            # Submit button inside form allows 'Enter' key to work
-            if st.form_submit_button("Secure Login", use_container_width=True, type="primary"):
-                if admin_email == db["admin_settings"]["email"] and admin_password == db["admin_settings"]["password"]:
-                    st.session_state.admin_logged_in = True
-                    st.rerun()
-                else:
-                    st.error("Invalid Credentials.")
+        with st.container(border=True):
+            with st.form("admin_login_form"):
+                st.markdown("<h2 style='text-align: center;'>🛡️ AIInnovax Admin</h2>", unsafe_allow_html=True)
+                st.markdown("<p style='text-align: center;'>Vendor Command Center</p>", unsafe_allow_html=True)
+                admin_email = st.text_input("Admin Email")
+                admin_password = st.text_input("Password", type="password")
+                if st.form_submit_button("Secure Login", use_container_width=True, type="primary"):
+                    if admin_email == db["admin_settings"]["email"] and admin_password == db["admin_settings"]["password"]:
+                        st.session_state.admin_logged_in = True
+                        st.rerun()
+                    else:
+                        st.error("Invalid Credentials.")
     st.stop()
 
-# --- TOP NAVIGATION (Profile & Logout) ---
+# --- TOP NAVIGATION ---
 col_logo, col_profile, col_logout = st.columns([8, 1, 1])
 with col_profile:
     if st.button("👤 Profile", use_container_width=True):
@@ -74,7 +51,7 @@ def generate_password(length=10):
     return ''.join(random.choice(string.ascii_letters + string.digits + "@#$") for _ in range(length))
 
 # --- SIDEBAR ---
-st.sidebar.markdown("<h2 style='color: #3B82F6;'>🛡️ AIInnovax</h2>", unsafe_allow_html=True)
+st.sidebar.title("🛡️ AIInnovax")
 if "admin_menu" not in st.session_state:
     st.session_state.admin_menu = "Dashboard"
 
@@ -91,17 +68,17 @@ else:
 if menu == "Dashboard":
     st.header("🏢 Command Dashboard")
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Total Customers", len(db.get("users", [])))
-    c2.metric("Total SOPs", len(db.get("sops", [])))
-    c3.metric("System Health", "Healthy 🟢")
-    c4.metric("LLM Gateway", "Active 🟢")
+    with c1: st.metric("Total Customers", len(db.get("users", [])))
+    with c2: st.metric("Total SOPs", len(db.get("sops", [])))
+    with c3: st.metric("System Health", "Healthy 🟢")
+    with c4: st.metric("LLM Gateway", "Active 🟢")
 
 elif menu == "Profile":
     st.header("👤 Admin Security Profile")
     with st.container(border=True):
         new_admin_email = st.text_input("Admin Email", value=db["admin_settings"]["email"])
         new_admin_pw = st.text_input("New Password", type="password")
-        confirm_admin_pw = st.text_input("Confirm New Password", type="password") # Double check
+        confirm_admin_pw = st.text_input("Confirm New Password", type="password")
         
         if st.button("Update Admin Credentials", type="primary"):
             if new_admin_pw or confirm_admin_pw:
@@ -188,7 +165,6 @@ elif menu == "Manage Subscription":
                     st.session_state.admin_edit_msg = "Updated successfully."
                     st.rerun()
             
-            # --- DELETION SAFETY CHECK ---
             st.markdown("<br>", unsafe_allow_html=True)
             with st.expander("🚨 Danger Zone: Delete Customer"):
                 st.error("This is permanent.")
@@ -209,7 +185,7 @@ elif menu == "Global Repository":
         customers = [u["company"] for u in db.get("users", [])]
         selected_filter = st.selectbox("Filter by Customer", ["All"] + customers)
     with col_search:
-        search_query = st.text_input("🔍 Search SOP by Title") # Search Function
+        search_query = st.text_input("🔍 Search SOP by Title")
     
     sops = db.get("sops", [])
     if selected_filter != "All": sops = [s for s in sops if s["customer_registered_name"] == selected_filter]
