@@ -14,8 +14,8 @@
             "email": "Test1",
             "password": "3jdmr#@l2s",
             "company": "Test1",
-            "plan": "Advance ($150/mo)",
-            "limit": 100,
+            "plan": "Premium (Custom)",
+            "limit": 500,
             "used": 0,
             "status": "Active"
         },
@@ -24,8 +24,8 @@
             "email": "Test1",
             "password": "3jdmr#@l2s",
             "company": "Test1",
-            "plan": "Advance ($150/mo)",
-            "limit": 100,
+            "plan": "Premium (Custom)",
+            "limit": 500,
             "used": 0,
             "status": "Active"
         },
