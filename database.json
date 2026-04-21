@@ -7,7 +7,7 @@
             "company": "AIInnovax",
             "plan": "Advance ($150/mo)",
             "limit": 100,
-            "used": 15,
+            "used": 16,
             "status": "Active",
             "force_reset": false
         }
@@ -149,6 +149,14 @@
             "client_name": "AIInnovax",
             "date": "2026-04-21",
             "content": "\ud83d\udea8 **SOP SYNTHESIS ERROR:** Groq Connection Failed. \n\n**Technical Details:** Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}"
+        },
+        {
+            "id": "sop_20260421121005",
+            "title": "Sentinel Response",
+            "customer_registered_name": "AIInnovax",
+            "client_name": "AIInnovax",
+            "date": "2026-04-21",
+            "content": "\ud83d\udea8 **AI ENGINE ERROR (GROQ):** Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}"
         }
     ],
     "admin_settings": {
