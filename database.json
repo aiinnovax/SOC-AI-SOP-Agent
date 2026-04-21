@@ -1,5 +1,17 @@
 {
-    "users": [],
+    "users": [
+        {
+            "uid": "usr_aiinnovax_919",
+            "email": "kishanlohar91@gmail.com",
+            "password": "Ydg6IMftbF",
+            "company": "AIInnovax",
+            "plan": "Basic ($25/mo)",
+            "limit": 10,
+            "used": 0,
+            "status": "Active",
+            "force_reset": true
+        }
+    ],
     "clients": [
         {
             "id": "cli_001",
