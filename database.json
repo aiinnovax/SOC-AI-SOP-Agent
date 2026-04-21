@@ -7,7 +7,7 @@
             "company": "AIInnovax",
             "plan": "Basic ($25/mo)",
             "limit": 10,
-            "used": 5,
+            "used": 6,
             "status": "Active",
             "force_reset": false
         }
@@ -64,6 +64,14 @@
         },
         {
             "id": "sop_20260421114317",
+            "title": "Sentinel Response",
+            "customer_registered_name": "AIInnovax",
+            "client_name": "AIInnovax",
+            "date": "2026-04-21",
+            "content": "\ud83d\udea8 **SOP SYNTHESIS ERROR:** API Connection Failed. Please check your GEMINI_API_KEY. \n\n**Technical Details:** 404 models/gemini-1.5-pro-latest is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods."
+        },
+        {
+            "id": "sop_20260421114511",
             "title": "Sentinel Response",
             "customer_registered_name": "AIInnovax",
             "client_name": "AIInnovax",
