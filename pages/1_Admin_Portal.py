@@ -15,7 +15,7 @@ except Exception as e:
     st.error("Authentication Error: check your Secrets in Streamlit Cloud.")
     st.stop()
 
-st.title("🏢 Vendor Management Portal")
+st.title("🏢 Admin Portal")
 st.markdown("Use this secure panel to manage client licenses and security contexts.")
 
 # --- ADD CLIENT SECTION ---
