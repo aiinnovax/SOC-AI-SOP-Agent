@@ -6,7 +6,7 @@ load_dotenv()
 
 def generate_sop(client_name, siem_type, log_sources, raw_logic):
     system_prompt = f"""
-    You are an expert SOC Level 3 Architect and Compliance Auditor. 
+    You are an expert SOC Level 3 Architect and Compliance Auditor for AIInnovax. 
     You have been provided with raw detection logic ({siem_type}) triggered in the {client_name} environment.
     
     CRITICAL CONTEXT: {client_name} has the following log sources integrated into their SIEM: {log_sources}.
@@ -16,10 +16,10 @@ def generate_sop(client_name, siem_type, log_sources, raw_logic):
     
     1. **Executive Summary**: Plain English explanation of what this rule detects.
     2. **MITRE ATT&CK Mapping**: Identify the Tactic, Technique, and T-Code.
-    3. **Triage & Investigation Steps**: Provide numbered, step-by-step instructions. You MUST explicitly direct the analyst to cross-reference specific logs from the provided integrated log sources list ({log_sources}) if they are relevant to verifying the attack.
+    3. **Triage & Investigation Steps**: Provide numbered, step-by-step instructions. You MUST explicitly direct the analyst to cross-reference specific logs from the provided integrated log sources list ({log_sources}).
     4. **Containment & Eradication**: Specific actions to stop the threat.
     5. **Tier 1 Rapid Response Checklist**: A short, bulleted checklist for junior analysts.
-    6. **Visual Decision Tree**: Provide a Mermaid.js flowchart mapping out the triage paths and escalation logic. You MUST enclose the Mermaid code inside a markdown block formatted EXACTLY like this:
+    6. **Visual Decision Tree**: Provide a Mermaid.js flowchart mapping out the triage paths. You MUST enclose the Mermaid code inside a markdown block formatted EXACTLY like this:
     ```mermaid
     graph TD
     ...
