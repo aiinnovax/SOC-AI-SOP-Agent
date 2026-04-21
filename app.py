@@ -5,12 +5,18 @@ import re
 from dotenv import load_dotenv
 from llm_router import generate_sop
 
+# Load the secret keys
 load_dotenv()
 
 st.set_page_config(page_title="Customer Portal PoC", layout="wide")
 
 st.title("AIInnovax - SOC Mission Control (PoC)")
 st.markdown("---")
+
+# Sidebar for Debugging
+with st.sidebar:
+    st.header("Settings")
+    show_debug = st.checkbox("Show Raw AI Output (Debug)")
 
 col_input, col_output = st.columns([1, 1.5])
 
@@ -27,17 +33,57 @@ with col_input:
 
 with col_output:
     st.subheader("Generated SOP & Triage Plan")
+    
     if generate_btn:
         if raw_logic.strip() == "":
             st.warning("Please paste some detection logic first.")
         else:
             with st.spinner(f"Analyzing {siem_type} logic for {client_name}..."):
+                # Call our router with all context
                 sop_result = generate_sop(client_name, siem_type, log_sources, raw_logic)
                 
-                # Bulletproof regex to catch any variation of the mermaid block
-                mermaid_match = re.search(r'
-http://googleusercontent.com/immersive_entry_chip/0
-http://googleusercontent.com/immersive_entry_chip/1
-4. Click **Build SOP**.
+                if show_debug:
+                    st.divider()
+                    st.write("### Raw AI Output:")
+                    st.code(sop_result)
+                
+                # Safer extraction of Mermaid code without complex regex
+                mermaid_code = ""
+                if "```mermaid" in sop_result.lower():
+                    try:
+                        # Split the string to find the content between the backticks
+                        parts = sop_result.split("```")
+                        for part in parts:
+                            if part.strip().lower().startswith("mermaid"):
+                                # Extract just the mermaid code (removing the word 'mermaid' from the start)
+                                mermaid_code = part.strip()[7:].strip()
+                                break
+                    except Exception:
+                        mermaid_code = ""
 
-Scroll down on the right side. Do you see the **GREEN** box and the visual chart, or did you get the **RED** box telling us the AI got lazy and skipped the step? Let me know exactly what you see!
+                # Display the main Markdown text (excluding the mermaid block for clean look)
+                # We'll replace the mermaid block with an empty string for the main display
+                display_text = re.sub(r'```[Mm]ermaid.*?```', '', sop_result, flags=re.DOTALL)
+                st.markdown(display_text)
+                
+                if mermaid_code:
+                    st.success("Visual Decision Tree Generated!")
+                    st.markdown("---")
+                    
+                    # Modern Mermaid rendering block
+                    mermaid_html = f"""
+                    <div class="mermaid" style="background-color: white; padding: 20px; border-radius: 10px; border: 1px solid #ddd;">
+                    {mermaid_code}
+                    </div>
+                    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+                    <script>
+                        mermaid.initialize({{ 
+                            startOnLoad: true, 
+                            theme: 'default',
+                            securityLevel: 'loose'
+                        }});
+                    </script>
+                    """
+                    components.html(mermaid_html, height=600, scrolling=True)
+                else:
+                    st.info("Note: No visual flowchart was generated for this specific query.")
