@@ -1,16 +1,5 @@
 {
-    "users": [
-        {
-            "uid": "usr_12_534",
-            "email": "test33",
-            "password": "u1g0bGi7@1",
-            "company": "12",
-            "plan": "Advance ($150/mo)",
-            "limit": 100,
-            "used": 0,
-            "status": "Active"
-        }
-    ],
+    "users": [],
     "clients": [
         {
             "id": "cli_001",
