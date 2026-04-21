@@ -1,18 +1,14 @@
 import streamlit as st
-import google.generativeai as genai
+from groq import Groq
 
 def generate_sop(siem, logic, client_name, log_sources):
-    # Retrieve API Key from Streamlit Secrets
-    api_key = st.secrets["GEMINI_API_KEY"]
+    # Retrieve Groq API Key from Streamlit Secrets
+    api_key = st.secrets["GROQ_API_KEY"]
     
     if not api_key:
-        return "🚨 **SOP SYNTHESIS ERROR:** GEMINI_API_KEY not found in Streamlit Secrets."
+        return "🚨 **SOP SYNTHESIS ERROR:** GROQ_API_KEY not found in Streamlit Secrets."
 
-    # Configure the official Google SDK
-    genai.configure(api_key=api_key)
-    
-    # Initialize the model
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    client = Groq(api_key=api_key)
 
     system_prompt = f"""
     You are SOP-Genie, an expert SOC Operational Procedure Architect.
@@ -34,13 +30,16 @@ def generate_sop(siem, logic, client_name, log_sources):
     """
 
     try:
-        # Generate Content
-        response = model.generate_content(
-            f"{system_prompt}\n\nLogic to analyze:\n{logic}",
-            generation_config=genai.types.GenerationConfig(
-                temperature=0.1
-            )
+        # Using Llama 3 70B for high-quality technical reasoning
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Logic to analyze:\n{logic}"}
+            ],
+            model="llama3-70b-8192",
+            temperature=0.1,
+            max_tokens=2048,
         )
-        return response.text
+        return chat_completion.choices[0].message.content
     except Exception as e:
-        return f"🚨 **SOP SYNTHESIS ERROR:** Connection Failed. \n\n**Technical Details:** {str(e)}"
+        return f"🚨 **SOP SYNTHESIS ERROR:** Groq Connection Failed. \n\n**Technical Details:** {str(e)}"
