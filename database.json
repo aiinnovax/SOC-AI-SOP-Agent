@@ -14,7 +14,7 @@
             "email": "Test1",
             "password": "3jdmr#@l2s",
             "company": "Test1",
-            "plan": "Basic ($25/mo)",
+            "plan": "Advance ($150/mo)",
             "limit": 10,
             "used": 0,
             "status": "Active"
@@ -22,9 +22,9 @@
         {
             "uid": "usr_test1_393",
             "email": "Test1",
-            "password": "b#$lSfZi4S",
+            "password": "3jdmr#@l2s",
             "company": "Test1",
-            "plan": "Basic ($25/mo)",
+            "plan": "Advance ($150/mo)",
             "limit": 10,
             "used": 0,
             "status": "Active"
