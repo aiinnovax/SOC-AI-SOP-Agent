@@ -15,9 +15,9 @@
             "password": "3jdmr#@l2s",
             "company": "Test1",
             "plan": "Advance ($150/mo)",
-            "limit": 10,
+            "limit": 100,
             "used": 0,
-            "status": "Active"
+            "status": "Inactive"
         },
         {
             "uid": "usr_test1_393",
@@ -25,9 +25,9 @@
             "password": "3jdmr#@l2s",
             "company": "Test1",
             "plan": "Advance ($150/mo)",
-            "limit": 10,
+            "limit": 100,
             "used": 0,
-            "status": "Active"
+            "status": "Inactive"
         },
         {
             "uid": "usr_12_534",
