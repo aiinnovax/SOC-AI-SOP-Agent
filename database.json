@@ -1,26 +1,6 @@
 {
     "users": [
         {
-            "uid": "usr_test1_968",
-            "email": "Test1",
-            "password": "3jdmr#@l2s",
-            "company": "Test1",
-            "plan": "Premium (Custom)",
-            "limit": 500,
-            "used": 0,
-            "status": "Active"
-        },
-        {
-            "uid": "usr_test1_393",
-            "email": "Test1",
-            "password": "3jdmr#@l2s",
-            "company": "Test1",
-            "plan": "Premium (Custom)",
-            "limit": 500,
-            "used": 0,
-            "status": "Active"
-        },
-        {
             "uid": "usr_12_534",
             "email": "test33",
             "password": "u1g0bGi7@1",
