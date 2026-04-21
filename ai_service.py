@@ -6,7 +6,7 @@ import json
 
 # --- AI ENGINE CONFIGURATION ---
 # Toggle between "GROQ", "GEMINI", or "OPENROUTER" to change the platform brain
-ACTIVE_ENGINE = "GROQ" 
+model = genai.GenerativeModel("gemini-1.0-pro")
 
 def get_tavily_intel(query):
     """
