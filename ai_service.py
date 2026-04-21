@@ -6,7 +6,7 @@ import json
 
 # --- ENGINE CONFIGURATION ---
 # Options: "GROQ", "GEMINI", "OPENROUTER"
-ACTIVE_ENGINE = "GROQ" 
+ACTIVE_ENGINE = "GEMINI" 
 
 def get_tavily_intel(query):
     """Fetches real-time threat intelligence via Tavily API."""
