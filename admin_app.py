@@ -64,14 +64,14 @@ else:
     menu = st.sidebar.radio("Menu", ["Dashboard", "Manage Subscription", "Global Repository"], index=["Dashboard", "Manage Subscription", "Global Repository"].index(st.session_state.admin_menu))
     st.session_state.admin_menu = menu
 
-# --- ROUTING ---
+# --- DASHBOARD METRICS ---
 if menu == "Dashboard":
     st.header("🏢 Command Dashboard")
     c1, c2, c3, c4 = st.columns(4)
     with c1: st.metric("Total Customers", len(db.get("users", [])))
     with c2: st.metric("Total SOPs", len(db.get("sops", [])))
     with c3: st.metric("System Health", "Healthy 🟢")
-    with c4: st.metric("LLM Gateway", "Active 🟢")
+    with c4: st.metric("Groq Llama-3", "Active ⚡") # Changed label
 
 elif menu == "Profile":
     st.header("👤 Admin Security Profile")
