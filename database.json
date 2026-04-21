@@ -6,7 +6,7 @@
             "company": "Infosys",
             "plan": "Enterprise",
             "limit": 100,
-            "used": 0,
+            "used": 1,
             "status": "Active"
         }
     ],
@@ -18,5 +18,15 @@
             "log_sources": "Azure AD, CrowdStrike Falcon, O365"
         }
     ],
-    "sops": []
+    "sops": [
+        {
+            "id": "sop_20260421102221",
+            "title": "Sentinel Detection Response",
+            "customer_registered_name": "Infosys",
+            "client_name": "Acme Corp (Finance)",
+            "date": "2026-04-21",
+            "content": "SOP SYNTHESIS ERROR: Importing google.generativeai failed, please run 'pip install -q google-generativeai",
+            "mod_count": 0
+        }
+    ]
 }
