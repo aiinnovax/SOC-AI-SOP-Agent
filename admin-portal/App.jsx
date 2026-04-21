@@ -38,6 +38,7 @@ import {
 
 /**
  * AIInnovax Firebase Configuration
+ * Note: These are active credentials based on your previous setup.
  */
 const firebaseConfig = {
   apiKey: "AIzaSyD4jTLlcwSlq9N3YuvBhPLCmnBtUyhRMfs",
@@ -102,7 +103,7 @@ export default function App() {
         setLoading(false);
         
         if (u) {
-          // Rule 1: Public data path
+          // Rule 1: Public data path for multi-tenant setup
           const customersRef = collection(db, 'artifacts', appId, 'public', 'data', 'customers');
           const sopsRef = collection(db, 'artifacts', appId, 'public', 'data', 'sops');
 
@@ -158,8 +159,15 @@ export default function App() {
         <div className="max-w-md w-full bg-slate-800 rounded-2xl p-8 border border-slate-700 shadow-2xl text-center">
           <Settings size={48} className="mx-auto mb-6 text-blue-500 animate-pulse" />
           <h2 className="text-2xl font-bold mb-4">Action Required</h2>
-          <p className="text-slate-400 mb-6">{authError || "Firebase Config invalid."}</p>
-          <a href="https://console.firebase.google.com/" target="_blank" className="bg-blue-600 block py-3 rounded-xl font-bold">Open Firebase Console</a>
+          <p className="text-slate-400 mb-6">{authError || "Firebase configuration is invalid or provider is disabled."}</p>
+          <a 
+            href="https://console.firebase.google.com/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="bg-blue-600 block py-3 rounded-xl font-bold hover:bg-blue-700 transition"
+          >
+            Open Firebase Console
+          </a>
         </div>
       </div>
     );
@@ -180,27 +188,49 @@ export default function App() {
           <span className="font-bold text-xl tracking-tight">AIInnovax</span>
         </div>
         <nav className="flex-1 px-4 py-6 space-y-2">
-          <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${activeTab === 'dashboard' ? 'bg-blue-600 shadow-lg shadow-blue-900/20' : 'hover:bg-slate-800'}`}>
+          <button 
+            onClick={() => setActiveTab('dashboard')} 
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${activeTab === 'dashboard' ? 'bg-blue-600 shadow-lg shadow-blue-900/20' : 'hover:bg-slate-800'}`}
+          >
             <LayoutDashboard size={20} /> Dashboard
           </button>
-          <button onClick={() => setActiveTab('clients')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${activeTab === 'clients' ? 'bg-blue-600 shadow-lg shadow-blue-900/20' : 'hover:bg-slate-800'}`}>
+          <button 
+            onClick={() => setActiveTab('clients')} 
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${activeTab === 'clients' ? 'bg-blue-600 shadow-lg shadow-blue-900/20' : 'hover:bg-slate-800'}`}
+          >
             <Users size={20} /> Client Management
           </button>
-          <button onClick={() => setActiveTab('repository')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${activeTab === 'repository' ? 'bg-blue-600 shadow-lg shadow-blue-900/20' : 'hover:bg-slate-800'}`}>
+          <button 
+            onClick={() => setActiveTab('repository')} 
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${activeTab === 'repository' ? 'bg-blue-600 shadow-lg shadow-blue-900/20' : 'hover:bg-slate-800'}`}
+          >
             <Database size={20} /> SOP Repository
           </button>
         </nav>
+        <div className="p-6 border-t border-slate-800">
+          <div className="flex items-center gap-2 text-slate-400 text-xs">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            Cloud Connection Active
+          </div>
+        </div>
       </aside>
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
         <header className="bg-white border-b px-8 py-4 flex justify-between items-center sticky top-0 z-10 shadow-sm">
-          <h2 className="text-xl font-bold capitalize">{activeTab}</h2>
+          <h2 className="text-xl font-bold capitalize">{activeTab.replace('-', ' ')}</h2>
           <div className="flex items-center gap-4">
-            <Bell className="text-slate-400 cursor-pointer" size={20} />
-            <div className="flex items-center gap-3 bg-slate-50 px-3 py-1.5 rounded-full border">
+            <div className="relative p-2 hover:bg-slate-50 rounded-full cursor-pointer transition">
+              <Bell className="text-slate-400" size={20} />
+              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+            </div>
+            <div className="h-8 w-px bg-slate-200 mx-2"></div>
+            <div className="flex items-center gap-3 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
               <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">AD</div>
-              <span className="text-sm font-semibold">Administrator</span>
+              <div>
+                <p className="text-xs font-bold leading-none">Administrator</p>
+                <p className="text-[10px] text-slate-400 mt-1">Super User</p>
+              </div>
             </div>
           </div>
         </header>
@@ -208,31 +238,31 @@ export default function App() {
         <div className="p-8 max-w-7xl mx-auto">
           {activeTab === 'dashboard' && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <p className="text-slate-400 text-sm">Active Clients</p>
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
+                <p className="text-slate-400 text-sm font-medium">Active Clients</p>
                 <h3 className="text-3xl font-bold mt-1">{customers.length}</h3>
               </div>
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <p className="text-slate-400 text-sm">Managed SOPs</p>
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
+                <p className="text-slate-400 text-sm font-medium">Managed SOPs</p>
                 <h3 className="text-3xl font-bold mt-1">{sops.length}</h3>
               </div>
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <p className="text-slate-400 text-sm">AI Health</p>
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
+                <p className="text-slate-400 text-sm font-medium">AI Reliability</p>
                 <h3 className="text-3xl font-bold mt-1 text-green-500">99.9%</h3>
               </div>
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <p className="text-slate-400 text-sm">Monthly Tokens</p>
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
+                <p className="text-slate-400 text-sm font-medium">Token Usage</p>
                 <h3 className="text-3xl font-bold mt-1">4.2M</h3>
               </div>
             </div>
           )}
 
           {activeTab === 'clients' && (
-            <div className="space-y-6">
+            <div className="space-y-6 animate-in fade-in duration-300">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="text-2xl font-bold">Organization Directory</h3>
-                  <p className="text-slate-400">Add clients and configure their environment-specific log sources</p>
+                  <h3 className="text-2xl font-bold tracking-tight text-slate-800">Organization Directory</h3>
+                  <p className="text-slate-400 text-sm mt-1">Add clients and configure their environment-specific log sources</p>
                 </div>
                 <button 
                   onClick={() => setShowAddClient(true)}
@@ -245,14 +275,14 @@ export default function App() {
               {/* Client List */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {customers.map((client) => (
-                  <div key={client.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-blue-300 transition">
+                  <div key={client.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-blue-300 transition-all group">
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="bg-slate-100 p-2.5 rounded-xl text-blue-600">
+                        <div className="bg-slate-100 p-2.5 rounded-xl text-blue-600 group-hover:bg-blue-50 transition">
                           <Shield size={20} />
                         </div>
                         <div>
-                          <h4 className="font-bold text-lg">{client.name}</h4>
+                          <h4 className="font-bold text-lg text-slate-800">{client.name}</h4>
                           <span className="text-[10px] uppercase font-black bg-blue-50 text-blue-600 px-2 py-0.5 rounded tracking-widest">{client.siem}</span>
                         </div>
                       </div>
@@ -260,21 +290,23 @@ export default function App() {
                     </div>
                     <div className="space-y-3">
                       <div>
-                        <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">Integrated Log Sources</p>
+                        <p className="text-[10px] uppercase font-bold text-slate-400 mb-2 tracking-wide">Integrated Log Sources</p>
                         <div className="flex flex-wrap gap-1.5">
-                          {client.logSources?.split(',').map((log, i) => (
-                            <span key={i} className="text-[10px] bg-slate-50 border border-slate-100 px-2 py-1 rounded text-slate-600 font-medium">
+                          {client.logSources ? client.logSources.split(',').map((log, i) => (
+                            <span key={i} className="text-[10px] bg-slate-50 border border-slate-100 px-2 py-1 rounded text-slate-600 font-semibold">
                               {log.trim()}
                             </span>
-                          ))}
+                          )) : (
+                            <span className="text-[10px] text-slate-300 italic font-medium">No sources configured</span>
+                          )}
                         </div>
                       </div>
                       <div className="flex justify-between items-center pt-4 border-t border-slate-50 mt-4">
-                        <div className="text-xs font-bold text-slate-400 flex items-center gap-1">
-                          <FileText size={14} /> {client.activeSops} SOPs
+                        <div className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
+                          <FileText size={14} className="text-slate-300" /> {client.activeSops || 0} SOPs
                         </div>
-                        <button className="text-blue-600 text-xs font-bold flex items-center hover:underline">
-                          View Details <ChevronRight size={14} />
+                        <button className="text-blue-600 text-xs font-bold flex items-center hover:translate-x-1 transition-transform">
+                          Environment Settings <ChevronRight size={14} />
                         </button>
                       </div>
                     </div>
@@ -283,19 +315,26 @@ export default function App() {
               </div>
 
               {customers.length === 0 && (
-                <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-300">
-                  <Users size={48} className="mx-auto text-slate-200 mb-4" />
-                  <p className="text-slate-400 font-medium">No clients found. Start by adding your first organization.</p>
+                <div className="text-center py-24 bg-white rounded-3xl border border-dashed border-slate-300 flex flex-col items-center">
+                  <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                    <Users size={32} className="text-slate-200" />
+                  </div>
+                  <p className="text-slate-500 font-medium">No organizations registered yet.</p>
+                  <p className="text-slate-400 text-xs mt-1">Start by adding your first client using the button above.</p>
                 </div>
               )}
             </div>
           )}
 
           {activeTab === 'repository' && (
-            <div className="bg-white rounded-2xl border p-12 text-center text-slate-400">
-              <Database size={48} className="mx-auto mb-4 opacity-20" />
-              <p className="font-medium">Global SOP Archive is ready.</p>
-              <p className="text-xs">Connect to a live client to audit historical detection logs.</p>
+            <div className="bg-white rounded-3xl border p-20 text-center flex flex-col items-center animate-in slide-in-from-bottom-4 duration-500">
+              <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
+                <Database size={40} className="text-slate-200" />
+              </div>
+              <h4 className="text-lg font-bold text-slate-800">Global SOP Archive</h4>
+              <p className="text-slate-400 max-w-sm mt-2 text-sm leading-relaxed">
+                Centralized repository of all generated procedures. Select a client to audit historical detection logic and triage plans.
+              </p>
             </div>
           )}
         </div>
@@ -303,28 +342,33 @@ export default function App() {
 
       {/* Add Client Modal */}
       {showAddClient && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-6 animate-in fade-in duration-300">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-6 animate-in fade-in zoom-in-95 duration-200">
           <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
             <div className="p-6 border-b flex justify-between items-center bg-slate-50/50">
-              <h3 className="font-bold text-xl">Create New Organization</h3>
-              <X onClick={() => setShowAddClient(false)} className="text-slate-400 cursor-pointer" />
+              <h3 className="font-bold text-xl text-slate-800 tracking-tight">Register Organization</h3>
+              <div 
+                onClick={() => setShowAddClient(false)} 
+                className="p-1 hover:bg-slate-200 rounded-full cursor-pointer transition text-slate-400"
+              >
+                <X size={20} />
+              </div>
             </div>
             <form onSubmit={handleAddClient} className="p-8 space-y-6">
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Client Name</label>
+                <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest px-1">Client Name</label>
                 <input 
                   required
                   type="text" 
                   placeholder="e.g. Acme Corp" 
-                  className="w-full px-4 py-3 bg-slate-50 border rounded-xl focus:ring-2 focus:ring-blue-500/20 outline-none transition"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 outline-none transition font-medium"
                   value={newClient.name}
                   onChange={(e) => setNewClient({...newClient, name: e.target.value})}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Primary SIEM</label>
+                <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest px-1">Primary SIEM Stack</label>
                 <select 
-                  className="w-full px-4 py-3 bg-slate-50 border rounded-xl focus:ring-2 focus:ring-blue-500/20 outline-none transition"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 outline-none transition font-medium cursor-pointer"
                   value={newClient.siem}
                   onChange={(e) => setNewClient({...newClient, siem: e.target.value})}
                 >
@@ -332,20 +376,26 @@ export default function App() {
                   <option>Splunk</option>
                   <option>QRadar</option>
                   <option>CrowdStrike</option>
+                  <option>LogRhythm</option>
                 </select>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Log Sources (Comma Separated)</label>
+                <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest px-1">Integrated Log Sources</label>
                 <textarea 
-                  placeholder="e.g. Azure AD, Palo Alto, O365" 
-                  className="w-full px-4 py-3 bg-slate-50 border rounded-xl h-24 focus:ring-2 focus:ring-blue-500/20 outline-none transition resize-none"
+                  placeholder="e.g. Azure AD, Palo Alto, O365 Audit Logs" 
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl h-28 focus:ring-2 focus:ring-blue-500/20 outline-none transition resize-none font-medium leading-relaxed"
                   value={newClient.logSources}
                   onChange={(e) => setNewClient({...newClient, logSources: e.target.value})}
                 />
-                <p className="text-[10px] text-slate-400 italic">These will be used to context-inject the AI architect.</p>
+                <p className="text-[10px] text-slate-400 italic px-1 leading-relaxed">
+                  Separating sources with commas allows the AI to suggest specific investigation steps for this organization.
+                </p>
               </div>
-              <button type="submit" className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-blue-700 transition shadow-xl shadow-blue-900/20">
-                <Save size={18} /> Initialize Client Environment
+              <button 
+                type="submit" 
+                className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-blue-700 transition shadow-xl shadow-blue-900/20 mt-2"
+              >
+                <Save size={18} /> Initialize Environment
               </button>
             </form>
           </div>
