@@ -1,7 +1,7 @@
 import os
 from litellm import completion
 
-# Swap this single variable to change the entire platform's brain (e.g., 'gpt-4o', 'claude-3-opus')
+# Swap this single variable to change the entire platform's brain
 ACTIVE_MODEL = "gemini/gemini-1.5-pro"
 
 def generate_sop(siem, logic, client_name, log_sources):
@@ -30,8 +30,14 @@ def generate_sop(siem, logic, client_name, log_sources):
     ]
 
     try:
-        # One-line execution for any model
-        response = completion(model=ACTIVE_MODEL, messages=messages, temperature=0.1)
+        # Added a 45-second timeout so it never hangs forever
+        response = completion(
+            model=ACTIVE_MODEL, 
+            messages=messages, 
+            temperature=0.1,
+            timeout=45 
+        )
         return response.choices[0].message.content
     except Exception as e:
-        return f"SOP SYNTHESIS ERROR: {str(e)}"
+        # This will now display the exact error on your screen instead of spinning
+        return f"🚨 **SOP SYNTHESIS ERROR:** API Connection Failed. Please check your GEMINI_API_KEY. \n\n**Technical Details:** {str(e)}"
