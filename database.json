@@ -8,6 +8,16 @@
             "limit": 100,
             "used": 1,
             "status": "Active"
+        },
+        {
+            "uid": "usr_test1_968",
+            "email": "Test1",
+            "password": "3jdmr#@l2s",
+            "company": "Test1",
+            "plan": "Basic ($25/mo)",
+            "limit": 10,
+            "used": 0,
+            "status": "Active"
         }
     ],
     "clients": [
