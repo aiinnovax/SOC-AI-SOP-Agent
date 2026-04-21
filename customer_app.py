@@ -5,27 +5,9 @@ from ai_service import generate_sop
 
 st.set_page_config(page_title="SOP-Genie Portal", layout="wide", initial_sidebar_state="expanded")
 
-# --- PROFESSIONAL UI & CSS ---
-st.markdown("""
-    <style>
-    [data-testid='stSidebarNav'] {display: none;}
-    .stApp { background-color: #F8FAFC; }
-    div[data-testid="metric-container"] {
-        background-color: #ffffff; border-radius: 12px; padding: 20px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        border-top: 4px solid #10B981; /* Emerald Green */
-    }
-    div[data-testid="stMetricValue"] { color: #1E293B; font-weight: 900; font-size: 2rem;}
-    div[data-testid="stMetricLabel"] { color: #64748B; font-weight: 700; text-transform: uppercase; font-size: 0.8rem;}
-    .stButton>button { border-radius: 8px; font-weight: bold; transition: all 0.3s; }
-    .stButton>button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
-    h1, h2, h3 { color: #0F172A; font-weight: 800; }
-    </style>
-""", unsafe_allow_html=True)
-
 db, sha = get_db()
 
-# --- CENTERED LOGIN SCREEN (WITH ENTER KEY) ---
+# --- CENTERED LOGIN SCREEN ---
 if "logged_in_email" not in st.session_state:
     st.session_state.logged_in_email = None
 
@@ -33,21 +15,22 @@ if not st.session_state.logged_in_email:
     col1, col2, col3 = st.columns([1, 1.5, 1])
     with col2:
         st.write("<br><br><br>", unsafe_allow_html=True)
-        with st.form("customer_login_form"):
-            st.markdown("<h2 style='text-align: center; color: #10B981;'>⚡ SOP-Genie Portal</h2>", unsafe_allow_html=True)
-            st.markdown("<p style='text-align: center; color: #64748B;'>Secure Enterprise Login</p>", unsafe_allow_html=True)
-            login_email = st.text_input("Corporate Email")
-            login_password = st.text_input("Password", type="password")
-            if st.form_submit_button("Access Terminal", use_container_width=True, type="primary"):
-                matched_user = next((u for u in db.get("users", []) if u["email"] == login_email and u.get("password") == login_password), None)
-                if matched_user:
-                    if matched_user.get("status", "Active") == "Inactive":
-                        st.error("Account Suspended. Contact Support.")
+        with st.container(border=True):
+            with st.form("customer_login_form"):
+                st.markdown("<h2 style='text-align: center;'>⚡ SOP-Genie Portal</h2>", unsafe_allow_html=True)
+                st.markdown("<p style='text-align: center;'>Secure Enterprise Login</p>", unsafe_allow_html=True)
+                login_email = st.text_input("Corporate Email")
+                login_password = st.text_input("Password", type="password")
+                if st.form_submit_button("Access Terminal", use_container_width=True, type="primary"):
+                    matched_user = next((u for u in db.get("users", []) if u["email"] == login_email and u.get("password") == login_password), None)
+                    if matched_user:
+                        if matched_user.get("status", "Active") == "Inactive":
+                            st.error("Account Suspended. Contact Support.")
+                        else:
+                            st.session_state.logged_in_email = matched_user["email"]
+                            st.rerun()
                     else:
-                        st.session_state.logged_in_email = matched_user["email"]
-                        st.rerun()
-                else:
-                    st.error("Invalid email or password.")
+                        st.error("Invalid email or password.")
     st.stop()
 
 current_user = next((u for u in db.get("users", []) if u["email"] == st.session_state.logged_in_email), None)
@@ -55,7 +38,7 @@ if not current_user or current_user.get("status", "Active") == "Inactive":
     st.session_state.logged_in_email = None
     st.rerun()
 
-# --- TOP NAVIGATION (Profile & Logout) ---
+# --- TOP NAVIGATION ---
 col_logo, col_profile, col_logout = st.columns([8, 1, 1])
 with col_profile:
     if st.button("👤 Profile", use_container_width=True):
@@ -66,7 +49,7 @@ with col_logout:
         st.rerun()
 st.divider()
 
-# --- FORCE PASSWORD RESET (DOUBLE VALIDATION) ---
+# --- FORCE PASSWORD RESET ---
 if current_user.get("force_reset", False):
     st.title("🔒 Action Required: Secure Your Account")
     st.warning("Please update your auto-generated temporary password.")
@@ -88,7 +71,7 @@ if current_user.get("force_reset", False):
     st.stop()
 
 # --- SIDEBAR NAV ---
-st.sidebar.markdown(f"<h3 style='color: #10B981;'>{current_user['company']}</h3>", unsafe_allow_html=True)
+st.sidebar.title(f"{current_user['company']}")
 if "cust_menu" not in st.session_state:
     st.session_state.cust_menu = "SOP Architect"
 
@@ -166,9 +149,9 @@ elif menu == "My Repository":
 elif menu == "License & Usage":
     st.title("🪪 Subscription Status")
     c1, c2, c3 = st.columns(3)
-    c1.metric("Current Plan", current_user["plan"].split(" (")[0]) 
-    c2.metric("SOPs Used", current_user["used"])
-    c3.metric("Total Limit", current_user["limit"])
+    with c1: st.metric("Current Plan", current_user["plan"].split(" (")[0])
+    with c2: st.metric("SOPs Used", current_user["used"])
+    with c3: st.metric("Total Limit", current_user["limit"])
     
     st.progress(min(current_user["used"] / current_user["limit"], 1.0))
     st.write(f"Account Status: **{current_user.get('status', 'Active')}**")
