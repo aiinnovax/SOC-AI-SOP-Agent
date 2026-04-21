@@ -1,15 +1,6 @@
 {
     "users": [
         {
-            "uid": "usr_infosys_01",
-            "email": "soc@infosys.com",
-            "company": "Infosys",
-            "plan": "Enterprise",
-            "limit": 100,
-            "used": 1,
-            "status": "Active"
-        },
-        {
             "uid": "usr_test1_968",
             "email": "Test1",
             "password": "3jdmr#@l2s",
