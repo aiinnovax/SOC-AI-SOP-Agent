@@ -5,8 +5,8 @@
             "email": "kishanlohar91@gmail.com",
             "password": "123456",
             "company": "AIInnovax",
-            "plan": "Basic ($25/mo)",
-            "limit": 10,
+            "plan": "Advance ($150/mo)",
+            "limit": 100,
             "used": 10,
             "status": "Active",
             "force_reset": false
