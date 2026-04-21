@@ -3,7 +3,7 @@ from groq import Groq
 import google.generativeai as genai
 import requests
 import json
-
+genai.configure(api_key=st.secrets.get("GEMINI_API_KEY"))
 # --- AI ENGINE CONFIGURATION ---
 # Toggle between "GROQ", "GEMINI", or "OPENROUTER" to change the platform brain
 model = genai.GenerativeModel("gemini-1.0-pro")
