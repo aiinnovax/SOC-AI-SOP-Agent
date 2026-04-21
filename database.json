@@ -58,5 +58,9 @@
             "content": "SOP SYNTHESIS ERROR: Importing google.generativeai failed, please run 'pip install -q google-generativeai",
             "mod_count": 0
         }
-    ]
+    ],
+    "admin_settings": {
+        "email": "admin@aiinnovax.com",
+        "password": "admin"
+    }
 }
