@@ -5,7 +5,7 @@ import requests
 import json
 
 # --- CONFIG ---
-ACTIVE_ENGINE = "GEMINI"
+model = genai.GenerativeModel("gemini-pro")
 
 genai.configure(api_key=st.secrets.get("GEMINI_API_KEY"))
 
