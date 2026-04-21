@@ -1,0 +1,12 @@
+{
+    "customers": [
+        {
+            "name": "infosys",
+            "siem": "Sentinel",
+            "logs": "Windows Events, Cisco ISE, CrowdStrike, O365, Azure AD",
+            "tier": "MSSP Enterprise",
+            "active": true,
+            "updated_at": "2024-05-15"
+        }
+    ]
+}
