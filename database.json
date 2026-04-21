@@ -14,20 +14,20 @@
             "email": "Test1",
             "password": "3jdmr#@l2s",
             "company": "Test1",
-            "plan": "Advance ($150/mo)",
-            "limit": 100,
+            "plan": "Basic ($25/mo)",
+            "limit": 10,
             "used": 0,
-            "status": "Inactive"
+            "status": "Active"
         },
         {
             "uid": "usr_test1_393",
             "email": "Test1",
             "password": "3jdmr#@l2s",
             "company": "Test1",
-            "plan": "Advance ($150/mo)",
-            "limit": 100,
+            "plan": "Basic ($25/mo)",
+            "limit": 10,
             "used": 0,
-            "status": "Inactive"
+            "status": "Active"
         },
         {
             "uid": "usr_12_534",
