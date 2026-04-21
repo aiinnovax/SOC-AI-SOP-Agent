@@ -8,27 +8,48 @@ st.markdown("<style>[data-testid='stSidebarNav'] {display: none;}</style>", unsa
 
 db, sha = get_db()
 
-# --- AUTHENTICATION ---
-st.sidebar.subheader("Terminal Login")
-user_email = st.sidebar.text_input("Corporate Email")
-user_password = st.sidebar.text_input("Password", type="password")
+# --- AUTHENTICATION SESSION STATE ---
+if "logged_in_email" not in st.session_state:
+    st.session_state.logged_in_email = None
 
-if not user_email or not user_password:
-    st.sidebar.warning("Please enter your credentials.")
-    st.stop()
+if not st.session_state.logged_in_email:
+    # --- LOGIN SCREEN ---
+    st.sidebar.subheader("Terminal Login")
+    login_email = st.sidebar.text_input("Corporate Email")
+    login_password = st.sidebar.text_input("Password", type="password")
+    
+    if st.sidebar.button("Login", type="primary", use_container_width=True):
+        # Verify credentials against DB
+        matched_user = next((u for u in db.get("users", []) if u["email"] == login_email and u.get("password") == login_password), None)
+        
+        if matched_user:
+            if matched_user.get("status", "Active") == "Inactive":
+                st.sidebar.error("Account Suspended. Please contact AIInnovax support.")
+            else:
+                # Store email in session and reload
+                st.session_state.logged_in_email = matched_user["email"]
+                st.rerun()
+        else:
+            st.sidebar.error("Authentication Failed. Invalid email or password.")
+    st.stop() # Stop execution here if not logged in
 
-# Find user and verify credentials
-current_user = next((u for u in db.get("users", []) if u["email"] == user_email and u.get("password") == user_password), None)
+# --- FETCH FRESH USER DATA ---
+# This ensures we always have the latest quota even after a page reload
+current_user = next((u for u in db.get("users", []) if u["email"] == st.session_state.logged_in_email), None)
 
-if not current_user:
-    st.sidebar.error("Authentication Failed. Invalid email or password.")
-    st.stop()
-
-if current_user.get("status", "Active") == "Inactive":
-    st.sidebar.error("Account Suspended. Please contact AIInnovax support.")
-    st.stop()
+# Security check in case admin deleted the account while they were logged in
+if not current_user or current_user.get("status", "Active") == "Inactive":
+    st.session_state.logged_in_email = None
+    st.rerun()
 
 st.sidebar.success(f"Authenticated as {current_user['company']}")
+
+# --- LOGOUT BUTTON ---
+if st.sidebar.button("Logout", use_container_width=True):
+    st.session_state.logged_in_email = None
+    st.rerun()
+
+st.sidebar.divider()
 
 # --- SIDEBAR NAV ---
 menu = st.sidebar.radio("Mission Control", ["SOP Architect", "My Repository", "License & Usage"])
@@ -36,7 +57,6 @@ menu = st.sidebar.radio("Mission Control", ["SOP Architect", "My Repository", "L
 if menu == "SOP Architect":
     st.title("🔍 SOP-Genie: Architect")
     
-    # Check Limits
     if current_user["used"] >= current_user["limit"]:
         st.error(f"Quota Exceeded. You have used {current_user['used']}/{current_user['limit']} SOPs on your current plan. Contact AIInnovax Sales to upgrade.")
         st.stop()
@@ -48,7 +68,6 @@ if menu == "SOP Architect":
         
         my_clients = [c for c in db.get("clients", []) if c.get("owner_uid") == current_user["uid"]]
         
-        # Allow them to generate SOPs even if they haven't set up clients yet
         if not my_clients:
             client_name = current_user["company"]
             log_sources = "Standard Enterprise Logs"
@@ -88,7 +107,7 @@ if menu == "SOP Architect":
                     
                     st.session_state.last_sop = result
                     st.success("SOP Generated and Vaulted.")
-                    st.rerun() # Refresh to update quota
+                    st.rerun() 
             else:
                 st.warning("Provide detection logic.")
 
@@ -112,7 +131,7 @@ elif menu == "My Repository":
 elif menu == "License & Usage":
     st.title("🪪 Subscription Status")
     
-    st.metric("Current Plan", current_user["plan"].split(" (")[0]) # Shows "Basic" instead of "Basic ($25/mo)"
+    st.metric("Current Plan", current_user["plan"].split(" (")[0]) 
     
     usage_percent = min(current_user["used"] / current_user["limit"], 1.0)
     st.progress(usage_percent)
