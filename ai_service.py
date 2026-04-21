@@ -2,7 +2,7 @@ import os
 from litellm import completion
 
 # Swap this single variable to change the entire platform's brain
-ACTIVE_MODEL = "gemini/gemini-1.5-pro-latest"
+ACTIVE_MODEL = "gemini/gemini-1.5-flash"
 
 def generate_sop(siem, logic, client_name, log_sources):
     system_prompt = f"""
